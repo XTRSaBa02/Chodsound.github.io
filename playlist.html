@@ -1,0 +1,46 @@
+<!-- Playlist Details Fragment -->
+<div class="fixed inset-0 z-[150] bg-slate-900/95 backdrop-blur-md overflow-y-auto">
+    <main class="max-w-7xl mx-auto px-6 py-8 pb-32 relative">
+        <div class="absolute top-4 right-6 z-50 flex items-center gap-3">
+            <button class="p-2 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors nav-link"
+                data-route="home" title="Close Playlist" aria-label="Close Playlist">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+        </div>
+
+        <section class="bg-gradient-to-br from-slate-800 to-slate-950 rounded-3xl p-8 mb-8 text-white shadow-2xl relative border border-white/5 overflow-hidden">
+            <div class="relative z-10 flex flex-col md:flex-row gap-8 items-end">
+                <div class="w-64 h-64 flex-shrink-0 shadow-2xl rounded-2xl overflow-hidden border border-white/10">
+                    <img id="pl-cover" alt="Playlist Cover" title="Playlist Cover" class="w-full h-full object-cover bg-slate-800" src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=600" />
+                </div>
+                <div class="flex-1">
+                    <span class="text-xs font-bold uppercase tracking-widest text-primary mb-2 block">Playlist</span>
+                    <h1 id="pl-title" class="text-5xl font-black mb-4">Loading Playlist...</h1>
+                    <div class="flex flex-col md:flex-row md:items-center gap-6">
+                        <div class="flex items-center gap-3 text-slate-400 font-medium">
+                            <img id="pl-user-avatar" class="w-6 h-6 rounded-full object-cover" src="https://ui-avatars.com/api/?name=User&background=random" alt="Playlist owner" />
+                            <span id="pl-user-name" class="text-white hover:underline cursor-pointer">Artist</span>
+                            <span class="w-1 h-1 bg-slate-600 rounded-full"></span>
+                            <span id="pl-track-count">0 Tracks</span>
+                        </div>
+                        <button id="btn-play-all" class="flex items-center gap-2 bg-primary hover:bg-primary/95 text-white px-8 py-3 rounded-full font-bold shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95">
+                            <span class="material-symbols-rounded">play_arrow</span>
+                            Play All
+                        </button>
+                        <button id="btn-shuffle-all" class="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-full font-bold shadow-xl transition-all hover:scale-105 active:scale-95 border border-white/10">
+                            <span class="material-symbols-rounded">shuffle</span>
+                            Shuffle
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="space-y-4" id="playlist-tracks-list">
+            <div class="py-20 text-center text-slate-500">
+                <span class="material-symbols-rounded animate-spin text-4xl mb-4 text-primary">sync</span>
+                <p>Loading tracks...</p>
+            </div>
+        </div>
+    </main>
+</div>

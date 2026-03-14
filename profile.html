@@ -1,0 +1,360 @@
+<style>
+    .profile-header {
+        background: linear-gradient(to bottom, var(--bg-surface-light), var(--bg-dark));
+        padding: 60px 5% 0 5%;
+        position: relative;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .cover-photo {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 180px;
+        background: url('https://images.unsplash.com/photo-1557672172-298e090bd0f1?auto=format&fit=crop&w=1200&q=80') center/cover;
+        opacity: 0.4;
+        z-index: 0;
+    }
+
+    .profile-info {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        gap: 30px;
+        align-items: flex-end;
+        margin-top: 80px;
+        padding-bottom: 20px;
+    }
+
+    .profile-avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 4px solid var(--bg-dark);
+        object-fit: cover;
+        box-shadow: var(--shadow-md);
+    }
+
+    .profile-details {
+        flex: 1;
+        padding-bottom: 10px;
+    }
+
+    .profile-name {
+        font-size: 2.5rem;
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .verified-badge {
+        color: var(--secondary);
+        font-size: 1.2rem;
+    }
+
+    .profile-stats {
+        display: flex;
+        gap: 20px;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        margin-bottom: 15px;
+    }
+
+    .stat-item strong {
+        color: var(--text-main);
+        font-size: 1.1rem;
+    }
+
+    .profile-nav {
+        display: flex;
+        gap: 30px;
+        padding: 0 5%;
+        border-bottom: 1px solid var(--border-color);
+        background: var(--bg-dark);
+    }
+
+    .p-nav-item {
+        padding: 20px 0;
+        color: var(--text-muted);
+        font-weight: 500;
+        cursor: pointer;
+        position: relative;
+        transition: var(--transition-fast);
+    }
+
+    .p-nav-item:hover {
+        color: var(--text-main);
+    }
+
+    .p-nav-item.active {
+        color: var(--primary);
+    }
+
+    .p-nav-item.active::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--primary);
+        border-radius: 3px 3px 0 0;
+    }
+
+    .profile-content {
+        padding: 30px 5%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .playlist-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        transition: var(--transition-normal);
+        cursor: pointer;
+    }
+
+    .playlist-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--border-light);
+    }
+
+    .playlist-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+    }
+
+    .playlist-cover {
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .playlist-info {
+        padding: 15px;
+    }
+
+    .playlist-title {
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .playlist-meta {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        display: flex;
+        justify-content: space-between;
+    }
+</style>
+
+<div class="user-profile">
+    <div class="profile-header">
+        <div class="cover-photo"></div>
+        <div class="profile-info">
+            <img src="https://ui-avatars.com/api/?name=User&background=random&size=256" class="profile-avatar"
+                id="prof-avatar" alt="User Profile Avatar">
+            <div class="profile-details">
+                <h1 class="profile-name"><span id="prof-name">User</span> <i
+                        class="fas fa-check-circle verified-badge"></i></h1>
+                <div class="profile-stats">
+                    <div class="stat-item"><strong id="prof-followers-count">0</strong> Followers</div>
+                    <div class="stat-item"><strong id="prof-following-count">0</strong> Following</div>
+                    <div class="stat-item"><strong id="prof-tracks-count">0</strong> Tracks</div>
+                </div>
+                <div class="profile-actions" id="profile-action-buttons">
+                    <div id="own-profile-actions" class="hidden flex gap-2">
+                        <button class="btn btn-outline" id="btn-edit-profile" title="Edit Profile">
+                            <i class="fas fa-user-edit"></i> Edit Profile
+                        </button>
+                        <button class="btn btn-outline text-red-500 border-red-500/30 hover:bg-red-500 hover:text-white"
+                            id="btn-logout" title="Logout">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                    <div id="other-profile-actions" class="hidden flex gap-2">
+                        <button class="btn btn-primary px-8 flex items-center gap-2" id="btn-follow">
+                            <span class="material-symbols-rounded">person_add</span>
+                            <span id="follow-text">Follow</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-nav">
+        <div class="p-nav-item active" onclick="window.app.switchTab(event.target, 'tracks')">Tracks</div>
+        <div class="p-nav-item" onclick="window.app.switchTab(event.target, 'playlists')">Playlists</div>
+        <div class="p-nav-item" onclick="window.app.switchTab(event.target, 'likes')">Likes</div>
+    </div>
+
+    <div class="profile-content">
+        <div id="tab-tracks" class="tab-content">
+            <h3 class="uploads-title">Uploads</h3>
+            <div class="tracks-grid" id="profile-tracks-container">
+                <div class="p-8 text-center text-slate-400">No tracks uploaded yet.</div>
+            </div>
+        </div>
+        <div id="tab-playlists" class="tab-content hidden">
+            <div class="playlist-grid" id="profile-playlists-container">
+                <!-- Playlists -->
+            </div>
+        </div>
+        <div id="tab-likes" class="tab-content hidden">
+            <div class="tracks-grid" id="profile-likes-container">
+                <!-- Liked Tracks -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Track Modal -->
+<div id="edit-track-modal"
+    class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity">
+    <div
+        class="bg-white dark:bg-slate-900 w-full max-w-lg shadow-2xl rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
+        <div
+            class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <span class="material-symbols-rounded text-primary">edit_note</span> Edit Track
+            </h3>
+            <button id="btn-close-edit"
+                class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+        </div>
+        <div class="p-6">
+            <form id="edit-track-form" class="space-y-4">
+                <input type="hidden" id="edit-track-id">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                        for="edit-title">Track Title</label>
+                    <input id="edit-title" required
+                        class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary outline-none dark:text-white"
+                        type="text" />
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                        for="edit-track-cover">Track Cover</label>
+                    <div class="flex items-center gap-4">
+                        <img id="edit-track-preview" src=""
+                            class="w-16 h-16 rounded-lg object-cover bg-slate-100 dark:bg-slate-800"
+                            alt="Cover Preview">
+                        <input id="edit-track-cover" accept="image/*" type="file"
+                            class="flex-1 text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer" />
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                        for="edit-genre">Genre</label>
+                    <div class="flex gap-2">
+                        <select id="edit-genre" required
+                            class="w-1/3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary outline-none dark:text-white appearance-none cursor-pointer"
+                            onchange="document.getElementById('edit-genre-custom').classList.toggle('hidden', this.value !== 'other'); if(this.value !== 'other') document.getElementById('edit-genre-custom').value = this.value;">
+                            <option value="electronic">Electronic</option>
+                            <option value="lofi">Lo-Fi</option>
+                            <option value="ambient">Ambient</option>
+                            <option value="jazz">Jazz</option>
+                            <option value="rock">Rock</option>
+                            <option value="pop">Pop</option>
+                            <option value="hiphop">Hip Hop</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <input id="edit-genre-custom" placeholder="Enter genre..." title="Custom genre"
+                            class="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary outline-none dark:text-white hidden"
+                            type="text" />
+                    </div>
+                </div>
+                <div class="pt-4 flex justify-between items-center border-t border-slate-100 dark:border-slate-800">
+                    <button type="button" id="btn-delete-track"
+                        class="px-4 py-2 text-sm font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all flex items-center gap-2">
+                        <span class="material-symbols-rounded text-lg">delete</span> Delete Track
+                    </button>
+                    <div class="flex gap-3">
+                        <button type="button" id="btn-cancel-edit"
+                            class="px-5 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Cancel</button>
+                        <button type="submit" id="btn-save-edit"
+                            class="px-6 py-2 bg-primary text-white rounded-xl font-semibold shadow-md hover:bg-brand-deep transition-all flex items-center gap-2">
+                            <span id="edit-spinner" class="material-symbols-rounded animate-spin hidden text-sm">sync</span>
+                            <span id="edit-btn-text">Save Changes</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div id="edit-profile-modal"
+    class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity">
+    <div
+        class="bg-white dark:bg-slate-900 w-full max-w-lg shadow-2xl rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
+        <div
+            class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <span class="material-symbols-rounded text-primary">manage_accounts</span> Edit Profile
+            </h3>
+            <button id="btn-close-profile-edit"
+                class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+        </div>
+        <div class="p-6">
+            <form id="edit-profile-form" class="space-y-4">
+                <div class="flex items-center gap-4 mb-2">
+                    <img id="edit-prof-preview" src="https://ui-avatars.com/api/?name=User&background=random"
+                        alt="Profile avatar preview" title="Profile avatar preview"
+                        class="w-16 h-16 rounded-full object-cover border-2 border-slate-200 dark:border-slate-700">
+                    <div class="flex-1">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                            for="edit-prof-avatar">Profile Picture</label>
+                        <input id="edit-prof-avatar" accept="image/*"
+                            class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
+                            type="file" />
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                            for="edit-prof-firstname">First Name</label>
+                        <input id="edit-prof-firstname"
+                            class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary outline-none dark:text-white"
+                            type="text" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                            for="edit-prof-lastname">Last Name</label>
+                        <input id="edit-prof-lastname"
+                            class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary outline-none dark:text-white"
+                            type="text" />
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                        for="edit-prof-username">Username</label>
+                    <input id="edit-prof-username"
+                        class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary outline-none dark:text-white"
+                        type="text" />
+                </div>
+                <div class="pt-4 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-800">
+                    <button type="button" id="btn-cancel-profile-edit"
+                        class="px-5 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Cancel</button>
+                    <button type="submit" id="btn-save-profile-edit"
+                        class="px-6 py-2 bg-primary text-white rounded-xl font-semibold shadow-md hover:bg-brand-deep transition-all flex items-center gap-2">
+                        <span id="edit-prof-spinner"
+                            class="material-symbols-rounded animate-spin hidden text-sm">sync</span>
+                        <span id="edit-prof-btn-text">Save Profile</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,63 @@
+<!-- Search Results Fragment -->
+<main class="flex-1 max-w-7xl mx-auto px-6 py-8 w-full mb-24">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold mb-2">Search Results</h1>
+        <p id="search-query-display" class="text-slate-500 dark:text-slate-400">Showing results for "<span
+                class="font-semibold text-primary">...</span>"</p>
+    </div>
+
+    <!-- Tracks Section -->
+    <section id="search-tracks-section" class="mb-12 hidden">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold flex items-center gap-2">
+                <span class="material-symbols-rounded text-primary">music_note</span>
+                Tracks
+            </h2>
+        </div>
+        <div id="search-tracks-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Tracks populate here -->
+        </div>
+    </section>
+
+    <!-- Profiles Section -->
+    <section id="search-profiles-section" class="mb-12 hidden">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold flex items-center gap-2">
+                <span class="material-symbols-rounded text-primary">person</span>
+                Artists & Profiles
+            </h2>
+        </div>
+        <div id="search-profiles-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            <!-- Profiles populate here -->
+        </div>
+    </section>
+
+    <!-- Genres Section -->
+    <section id="search-genres-section" class="mb-12 hidden">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold flex items-center gap-2">
+                <span class="material-symbols-rounded text-primary">category</span>
+                Genres
+            </h2>
+        </div>
+        <div id="search-genres-container" class="flex flex-wrap gap-3">
+            <!-- Genres populate here -->
+        </div>
+    </section>
+
+    <!-- Empty State -->
+    <div id="search-empty-state" class="hidden py-20 text-center">
+        <div
+            class="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span class="material-symbols-rounded text-4xl text-slate-400">search_off</span>
+        </div>
+        <h2 class="text-2xl font-bold mb-2">No results found</h2>
+        <p class="text-slate-500">We couldn't find anything matching your search. Try different keywords.</p>
+    </div>
+
+    <!-- Loading State -->
+    <div id="search-loading-state" class="py-20 flex flex-col items-center justify-center">
+        <span class="material-symbols-rounded animate-spin text-4xl text-primary mb-4">sync</span>
+        <p class="text-slate-500">Searching the echo chambers...</p>
+    </div>
+</main>

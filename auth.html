@@ -1,0 +1,134 @@
+<!-- Authentication View -->
+<main
+    class="w-full flex min-h-[calc(100vh-64px-96px)] items-center justify-center p-4 md:p-8 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-950 dark:to-brand-darkest transition-colors duration-500">
+    <div
+        class="w-full max-w-5xl bg-white/70 dark:bg-slate-900/40 backdrop-blur-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row border border-white/20 dark:border-slate-800/50">
+
+        <!-- Left Banner: Visual Branding (Visible on MD+) -->
+        <div
+            class="hidden md:flex md:w-1/2 p-12 bg-primary relative overflow-hidden flex-col justify-between text-white">
+            <!-- Animated Background Blobs -->
+            <div class="absolute top-0 right-0 w-64 h-64 bg-accent-medium/30 rounded-full blur-3xl animate-pulse"></div>
+            <div class="absolute -bottom-20 -left-20 w-80 h-80 bg-brand-deep/40 rounded-full blur-3xl"></div>
+
+            <div class="relative z-10">
+                <div class="flex items-center gap-3 mb-8">
+                    <div
+                        class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 shadow-xl">
+                        <span class="material-symbols-rounded text-3xl">graphic_eq</span>
+                    </div>
+                    <span class="text-3xl font-black tracking-tighter">ChodSound</span>
+                </div>
+
+                <h1 id="auth-brand-title" class="text-4xl lg:text-5xl font-extrabold leading-tight mb-6">
+                    Join the wave. <br />Share your sound.
+                </h1>
+                <p class="text-blue-100/80 text-lg leading-relaxed max-w-md">
+                    Connect with artists worldwide. Upload, crop, and engage with timed comments on every beat.
+                </p>
+            </div>
+
+            <div class="relative z-10 mt-auto pt-10">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="flex -space-x-3">
+                        <img class="w-10 h-10 rounded-full border-2 border-primary object-cover"
+                            src="https://i.pravatar.cc/100?u=1" alt="User" />
+                        <img class="w-10 h-10 rounded-full border-2 border-primary object-cover"
+                            src="https://i.pravatar.cc/100?u=2" alt="User" />
+                        <img class="w-10 h-10 rounded-full border-2 border-primary object-cover"
+                            src="https://i.pravatar.cc/100?u=3" alt="User" />
+                    </div>
+                    <span class="text-sm font-medium text-blue-100">50k+ creators active now</span>
+                </div>
+            </div>
+
+            <!-- Waveform SVG Decor -->
+            <svg class="absolute bottom-0 left-0 w-full opacity-20" viewBox="0 0 400 100" preserveAspectRatio="none">
+                <path d="M0,50 C50,20 100,80 150,50 C200,20 250,80 300,50 C350,20 400,80 450,50 L450,100 L0,100 Z"
+                    fill="white"></path>
+            </svg>
+        </div>
+
+        <!-- Right Panel: Auth Forms -->
+        <div class="w-full md:w-1/2 p-8 md:p-14 flex flex-col justify-center">
+            <div id="auth-header" class="mb-8">
+                <h2 id="auth-title" class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Welcome back</h2>
+                <p id="auth-subtitle" class="text-slate-500 dark:text-slate-400">Please enter your details to sign in.
+                </p>
+            </div>
+
+            <!-- Error/Success Message Area -->
+            <div id="auth-error-msg"
+                class="hidden animate-in fade-in slide-in-from-top-2 duration-300 p-4 rounded-2xl mb-6 text-sm flex items-center gap-3">
+                <span id="auth-msg-icon" class="material-symbols-rounded">error</span>
+                <span id="auth-msg-text">Error message here</span>
+            </div>
+
+            <!-- Social Auth -->
+            <button
+                class="w-full py-3.5 px-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 flex items-center justify-center gap-3 font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all active:scale-[0.98] mb-6">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/0/google.svg" class="w-5 h-5" alt="Google">
+                <span>Continue with Google</span>
+            </button>
+
+            <div class="relative py-4 mb-4">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-slate-200 dark:border-slate-800"></div>
+                </div>
+                <div class="relative flex justify-center text-xs uppercase font-bold tracking-widest text-slate-400">
+                    <span class="bg-white dark:bg-slate-900 px-4">Or use email</span>
+                </div>
+            </div>
+
+            <!-- Forms Container -->
+            <div class="relative min-h-[350px]">
+
+                <!-- Login Form -->
+                <form id="login-form" class="space-y-5 animate-in fade-in duration-500">
+                    <div class="space-y-1.5">
+                        <label for="email" class="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Email
+                            Address</label>
+                        <div class="relative">
+                            <span
+                                class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-rounded text-xl">mail</span>
+                            <input type="email" id="email" placeholder="name@company.com"
+                                class="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border-transparent focus:bg-white dark:focus:bg-slate-800 border-2 focus:border-primary/50 outline-none transition-all dark:text-white"
+                                required>
+                        </div>
+                    </div>
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between items-center ml-1">
+                            <label for="password"
+                                class="text-xs font-bold text-slate-500 uppercase tracking-wider">Password</label>
+                            <a href="#"
+                                class="text-xs font-bold text-primary hover:text-brand-muted transition-colors">Forgot?</a>
+                        </div>
+                        <div class="relative">
+                            <span
+                                class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-rounded text-xl">lock</span>
+                            <input type="password" id="password" placeholder="••••••••"
+                                class="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border-transparent focus:bg-white dark:focus:bg-slate-800 border-2 focus:border-primary/50 outline-none transition-all dark:text-white"
+                                required>
+                        </div>
+                    </div>
+                    <button id="btn-login-submit" type="button"
+                        class="w-full bg-primary hover:bg-brand-deep text-white font-bold py-4 rounded-2xl shadow-xl shadow-primary/20 transition-all hover:-translate-y-0.5 active:scale-[0.98] mt-4 flex items-center justify-center gap-2">
+                        <span>Sign In</span>
+                        <span class="material-symbols-rounded">arrow_forward</span>
+                    </button>
+                </form>
+
+            </div>
+
+            <!-- Link to Register -->
+            <div class="mt-8 text-center text-slate-800 dark:text-slate-200">
+                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">
+                    <span>Don't have an account?</span>
+                    <button
+                        class="nav-link text-primary font-bold hover:underline underline-offset-4 ml-1 transition-all"
+                        data-route="register">Create Account</button>
+                </p>
+            </div>
+        </div>
+    </div>
+</main>

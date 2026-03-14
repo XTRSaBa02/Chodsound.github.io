@@ -1,0 +1,110 @@
+<!-- Audio Player & Comments Fragment -->
+<div class="fixed inset-0 z-[150] bg-slate-900/95 backdrop-blur-md overflow-y-auto">
+    <main class="max-w-7xl mx-auto px-6 py-8 pb-32 relative">
+        <div class="absolute top-4 right-6 z-50 flex items-center gap-3">
+            <button class="p-2 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors nav-link"
+                data-route="home" title="Close Player" aria-label="Close Player">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+        </div>
+
+        <section
+            class="bg-gradient-to-br from-brand-deep to-brand-darkest dark:from-slate-900 dark:to-brand-darkest rounded-3xl p-8 mb-8 text-white shadow-2xl overflow-hidden relative border border-white/5">
+            <div class="relative z-10 grid md:grid-cols-3 gap-8 items-start">
+                <div class="md:col-span-2">
+                    <div class="flex items-start gap-6 mb-8">
+                        <button id="ap-play-btn"
+                            class="w-16 h-16 bg-primary hover:bg-brand-muted text-white rounded-full flex items-center justify-center transition-transform active:scale-95 shadow-xl shadow-primary/30">
+                            <span id="ap-play-icon"
+                                class="material-symbols-outlined text-4xl fill-current">play_arrow</span>
+                        </button>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-4 mb-2">
+                                <img id="ap-uploader-avatar" class="w-10 h-10 rounded-full border border-white/20 object-cover cursor-pointer hover:border-primary transition-all" src="https://ui-avatars.com/api/?name=User&background=random" alt="Uploader avatar">
+                                <div>
+                                    <h1 id="ap-title" class="text-3xl font-extrabold leading-tight">Loading...</h1>
+                                    <p class="text-brand-light font-medium flex items-center gap-2">
+                                        <span id="ap-artist" class="hover:underline cursor-pointer">Loading Artist</span>
+                                        <span class="w-1 h-1 bg-brand-light rounded-full"></span>
+                                        <span id="ap-genre" class="text-xs uppercase tracking-widest opacity-80">Genre</span>
+                                    </p>
+                                </div>
+                                <button id="ap-btn-like" class="text-slate-400 hover:text-pink-500 transition-colors ml-2">
+                                    <span class="material-symbols-rounded text-3xl">favorite</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center gap-4 mt-2">
+                            <!-- Volume Slider (Yellow Box position) -->
+                            <div class="flex items-center gap-2 group cursor-pointer bg-yellow-400/10 hover:bg-yellow-400/20 border border-yellow-400/30 px-4 py-2 rounded-full transition-colors" id="ap-volume-container">
+                                <span class="material-symbols-rounded text-yellow-400 transition-colors text-lg">volume_up</span>
+                                <input type="range" class="w-24 accent-yellow-400" id="ap-volume-slider" min="0" max="1" step="0.01" value="1" title="Volume slider">
+                            </div>
+
+                            <!-- Crop Button (Red Box position) -->
+                            <button
+                                class="px-5 py-2 bg-red-400/10 hover:bg-red-400/20 border border-red-400/30 text-red-500 rounded-full transition-all text-sm font-semibold flex items-center gap-2 nav-link shadow-lg"
+                                data-route="croppload" title="Crop & Download">
+                                <span class="material-symbols-rounded text-lg">content_cut</span> <span class="text-white">Crop & DL</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="relative w-full mb-8 h-40 cursor-text" id="waveform">
+                        <!-- Hydrated by Wavesurfer in PageInitializers.audioplay -->
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <img id="ap-cover" alt="Album Cover"
+                        class="w-full aspect-square object-cover rounded-xl shadow-2xl border border-white/10"
+                        src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=600" />
+                </div>
+            </div>
+        </section>
+
+        <div class="grid lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 space-y-8">
+                <div>
+                    <h4 class="text-xl font-bold mb-6 flex items-center gap-2 text-slate-900 dark:text-white">
+                        <span class="material-symbols-outlined text-primary">chat</span>
+                        Comments
+                    </h4>
+                    <div class="flex gap-4 mb-8">
+                        <img id="ap-user-avatar" alt="User Avatar" class="w-10 h-10 rounded-full object-cover"
+                            src="https://ui-avatars.com/api/?name=User&background=random" />
+                        <div class="flex-1">
+                            <textarea id="comment-input"
+                                class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 focus:ring-2 focus:ring-primary min-h-[100px] text-slate-900 dark:text-white"
+                                placeholder="Click on the waveform to pin a comment..."></textarea>
+                            <div class="flex justify-between items-center mt-3">
+                                <span id="comment-time-badge"
+                                    class="px-3 py-1 bg-primary/10 text-primary font-mono text-sm rounded-full">Pinned
+                                    at:
+                                    0:00</span>
+                                <button id="btn-post-comment"
+                                    class="bg-primary text-white px-5 py-2 rounded-lg font-semibold text-sm hover:bg-brand-deep transition-colors shadow-md">Post
+                                    Comment</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-4 pt-6 mt-6 border-t border-slate-200 dark:border-slate-800" id="comments-list">
+                        <div class="py-8 text-center text-slate-500">Loading comments...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="space-y-8">
+                <div
+                    class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <h4 class="font-bold mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
+                        <span class="material-symbols-outlined text-primary text-xl">queue_music</span>
+                        Related Tracks
+                    </h4>
+                    <!-- Tracks list -->
+                    <div id="ap-related-tracks">
+                        <div class="text-sm text-slate-500 py-4 text-center">No related tracks found.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
