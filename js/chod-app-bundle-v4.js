@@ -82,7 +82,7 @@
             this.totalTime = document.getElementById('time-total');
             this.isPlaying = false;
             this.isShuffle = false;
-            this.isRepeat = false; // 0: off, 1: repeat all, 2: repeat one
+            this.isRepeat = false;
             this.queue = [];
             this.currentIndex = -1;
             this.setupListeners();
@@ -141,7 +141,7 @@
                     this.audio.currentTime = 0;
                     this.audio.play();
                 } else {
-                    this.playNext(true); // true means it was auto-triggered
+                    this.playNext(true);
                 }
             };
         }
@@ -453,7 +453,7 @@
                             }
                         }
 
-                        // User request: Don't jump to audioplay automatically now. Just start playing in the persistent bottom player.
+
                     }
                     return;
                 }
@@ -496,7 +496,6 @@
                 const [route, queryString] = routeWithParams.split('?');
                 const params = new URLSearchParams(queryString);
 
-                // Ensure we don't double up on .html extension and handle leading slashes
                 let fileName = route.endsWith('.html') ? route : `${route}.html`;
                 if (fileName.startsWith('/')) fileName = fileName.slice(1);
                 console.log(`ChodSound: Fetching fragment from ${fileName}`);
@@ -815,7 +814,8 @@
                             audio_url: audioPublicUrl,
                             artist: user.username || 'Unknown',
                             cover: coverUrl,
-                            duration: Math.round(trackDuration)
+                            duration: Math.round(trackDuration),
+                            is_public: document.getElementById('visibility-toggle')?.checked ?? true
                         });
 
                         if (dbError) throw dbError;
@@ -854,6 +854,7 @@
                 const { data: trendingTracks, error: tErr } = await supabase
                     .from('tracks')
                     .select('*, likes:likes(count)')
+                    .eq('is_public', true)
                     .order('plays_count', { ascending: false })
                     .limit(4);
 
@@ -871,6 +872,7 @@
                 const { data: recentTracks, error: rErr } = await supabase
                     .from('tracks')
                     .select('*, likes:likes(count)')
+                    .eq('is_public', true)
                     .order('created_at', { ascending: false })
                     .limit(10);
 
@@ -1030,6 +1032,7 @@
                     .from('tracks')
                     .select('*, likes:likes(count)')
                     .eq('profile_id', viewId)
+                    .or(isSelf ? 'is_public.eq.true,is_public.eq.false' : 'is_public.eq.true')
                     .order('created_at', { ascending: false });
 
                 if (error) throw error;
@@ -1202,6 +1205,12 @@
 
             return `
             <div class="group relative bg-white dark:bg-slate-900/50 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-lg transition-all">
+                ${!t.is_public ? `
+                <div class="absolute top-6 left-6 z-20 bg-slate-900/80 backdrop-blur-md text-white text-[10px] px-2 py-1 rounded-lg flex items-center gap-1.5 font-bold border border-white/10 shadow-lg">
+                    <span class="material-symbols-rounded text-sm">lock</span>
+                    Private
+                </div>
+                ` : ''}
                 <div data-play="${trackAttr}" class="relative aspect-square rounded-xl overflow-hidden mb-4 shadow-md cursor-pointer">
                     <img alt="Cover" class="object-cover w-full h-full transform group-hover:scale-105 transition-transform duration-500" src="${t.cover}" />
                     <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -1265,6 +1274,7 @@
                 const { data: tracks, error: tErr } = await supabase
                     .from('tracks')
                     .select('*, likes:likes(count)')
+                    .eq('is_public', true)
                     .or(`title.ilike.%${query}%,genre.ilike.%${query}%`)
                     .limit(20);
 
@@ -2120,7 +2130,7 @@
                 container.innerHTML = '<div class="col-span-full py-20 flex justify-center text-primary"><span class="material-symbols-rounded animate-spin text-5xl">sync</span></div>';
                 try {
                     const sortBy = sortSelect?.value || 'newest';
-                    let query = supabase.from('tracks').select('*, likes:likes(count)');
+                    let query = supabase.from('tracks').select('*, likes:likes(count)').eq('is_public', true);
 
                     if (sortBy === 'newest') query = query.order('created_at', { ascending: false });
                     else if (sortBy === 'plays') query = query.order('plays_count', { ascending: false });

@@ -30,11 +30,12 @@ create table tracks (
   audio_url text not null,
   genre text,
   plays_count integer default 0,
+  is_public boolean default true,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
 alter table tracks enable row level security;
-create policy "Tracks are viewable by everyone." on tracks for select using (true);
+create policy "Tracks are viewable by everyone if public." on tracks for select using (is_public = true or (select auth.uid()) = profile_id);
 create policy "Users can insert their own tracks." on tracks for insert with check ((select auth.uid()) = profile_id);
 create policy "Users can update their own tracks." on tracks for update using ((select auth.uid()) = profile_id);
 create policy "Users can delete their own tracks." on tracks for delete using ((select auth.uid()) = profile_id);
