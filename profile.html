@@ -252,6 +252,14 @@
                     </div>
                 </div>
                 <div>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Privacy Status</label>
+                    <div class="flex items-center gap-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5">
+                        <span class="text-sm font-medium flex-1 text-slate-600 dark:text-slate-400" id="edit-visibility-label">Public Access</span>
+                        <input type="checkbox" checked class="rounded text-primary focus:ring-primary" id="edit-visibility-toggle" title="Public or Private Accessibility"
+                            onchange="document.getElementById('edit-visibility-label').textContent = this.checked ? 'Public Access' : 'Private Track'" />
+                    </div>
+                </div>
+                <div>
                     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1"
                         for="edit-genre">Genre</label>
                     <div class="flex gap-2">

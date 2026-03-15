@@ -1195,7 +1195,7 @@
         }
 
         renderTrackCard(t) {
-            const track = { id: t.id, title: t.title, artist: t.artist, url: t.audio_url, cover: t.cover, genre: t.genre, profile_id: t.profile_id };
+            const track = { id: t.id, title: t.title, artist: t.artist, url: t.audio_url, cover: t.cover, genre: t.genre, profile_id: t.profile_id, is_public: t.is_public };
             const trackAttr = encodeTrack(track);
             const user = JSON.parse(localStorage.getItem('chod_user'));
             const isOwner = user && user.id === t.profile_id;
@@ -1413,6 +1413,13 @@
 
                 document.getElementById('edit-track-id').value = track.id;
                 document.getElementById('edit-title').value = track.title;
+                
+                const visibilityToggle = document.getElementById('edit-visibility-toggle');
+                const visibilityLabel = document.getElementById('edit-visibility-label');
+                if (visibilityToggle && visibilityLabel) {
+                    visibilityToggle.checked = track.is_public !== false; // Default to true if undefined
+                    visibilityLabel.textContent = visibilityToggle.checked ? 'Public Access' : 'Private Track';
+                }
 
                 const genreSelect = document.getElementById('edit-genre');
                 const genreCustom = document.getElementById('edit-genre-custom');
@@ -1509,7 +1516,8 @@
                             .update({
                                 title: document.getElementById('edit-title').value,
                                 genre: document.getElementById('edit-genre-custom').value || document.getElementById('edit-genre').value,
-                                cover: finalCover
+                                cover: finalCover,
+                                is_public: document.getElementById('edit-visibility-toggle')?.checked ?? true
                             })
                             .eq('id', track.id);
 
