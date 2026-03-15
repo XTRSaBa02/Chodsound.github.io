@@ -855,7 +855,7 @@
                 const { data: trendingTracks, error: tErr } = await supabase
                     .from('tracks')
                     .select('*, likes:likes(count)')
-                    .eq('is_public', true)
+                    .neq('is_public', false)
                     .order('plays_count', { ascending: false })
                     .limit(4);
 
@@ -873,7 +873,7 @@
                 const { data: recentTracks, error: rErr } = await supabase
                     .from('tracks')
                     .select('*, likes:likes(count)')
-                    .eq('is_public', true)
+                    .neq('is_public', false)
                     .order('created_at', { ascending: false })
                     .limit(10);
 
@@ -1029,12 +1029,11 @@
             tracksContainer.innerHTML = '<div class="py-12 flex justify-center text-primary"><span class="material-symbols-rounded animate-spin text-3xl">sync</span></div>';
 
             try {
-                const { data: tracks, error } = await supabase
-                    .from('tracks')
-                    .select('*, likes:likes(count)')
-                    .eq('profile_id', viewId)
-                    .or(isSelf ? 'is_public.eq.true,is_public.eq.false' : 'is_public.eq.true')
-                    .order('created_at', { ascending: false });
+                let query = supabase.from('tracks').select('*, likes:likes(count)').eq('profile_id', viewId);
+                if (!isSelf) {
+                    query = query.neq('is_public', false);
+                }
+                const { data: tracks, error } = await query.order('created_at', { ascending: false });
 
                 if (error) throw error;
 
@@ -1206,6 +1205,12 @@
 
             return `
             <div class="group relative bg-white dark:bg-slate-900/50 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-lg transition-all">
+                ${t.is_public === false ? `
+                <div class="absolute top-6 left-6 z-20 bg-slate-900/80 backdrop-blur-md text-white text-[10px] px-2 py-1 rounded-lg flex items-center gap-1.5 font-bold border border-white/10 shadow-lg">
+                    <span class="material-symbols-rounded text-sm">lock</span>
+                    Private
+                </div>
+                ` : ''}
                 <div data-play="${trackAttr}" class="relative aspect-square rounded-xl overflow-hidden mb-4 shadow-md cursor-pointer">
                     <img alt="Cover" class="object-cover w-full h-full transform group-hover:scale-105 transition-transform duration-500" src="${t.cover}" />
                     <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -1269,7 +1274,7 @@
                 const { data: tracks, error: tErr } = await supabase
                     .from('tracks')
                     .select('*, likes:likes(count)')
-                    .eq('is_public', true)
+                    .neq('is_public', false)
                     .or(`title.ilike.%${query}%,genre.ilike.%${query}%`)
                     .limit(20);
 
@@ -2133,7 +2138,7 @@
                 container.innerHTML = '<div class="col-span-full py-20 flex justify-center text-primary"><span class="material-symbols-rounded animate-spin text-5xl">sync</span></div>';
                 try {
                     const sortBy = sortSelect?.value || 'newest';
-                    let query = supabase.from('tracks').select('*, likes:likes(count)');
+                    let query = supabase.from('tracks').select('*, likes:likes(count)').neq('is_public', false);
 
                     if (sortBy === 'newest') query = query.order('created_at', { ascending: false });
                     else if (sortBy === 'plays') query = query.order('plays_count', { ascending: false });
