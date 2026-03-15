@@ -496,6 +496,7 @@
                 const [route, queryString] = routeWithParams.split('?');
                 const params = new URLSearchParams(queryString);
 
+
                 let fileName = route.endsWith('.html') ? route : `${route}.html`;
                 if (fileName.startsWith('/')) fileName = fileName.slice(1);
                 console.log(`ChodSound: Fetching fragment from ${fileName}`);
@@ -1205,12 +1206,6 @@
 
             return `
             <div class="group relative bg-white dark:bg-slate-900/50 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-lg transition-all">
-                ${!t.is_public ? `
-                <div class="absolute top-6 left-6 z-20 bg-slate-900/80 backdrop-blur-md text-white text-[10px] px-2 py-1 rounded-lg flex items-center gap-1.5 font-bold border border-white/10 shadow-lg">
-                    <span class="material-symbols-rounded text-sm">lock</span>
-                    Private
-                </div>
-                ` : ''}
                 <div data-play="${trackAttr}" class="relative aspect-square rounded-xl overflow-hidden mb-4 shadow-md cursor-pointer">
                     <img alt="Cover" class="object-cover w-full h-full transform group-hover:scale-105 transition-transform duration-500" src="${t.cover}" />
                     <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -2130,7 +2125,7 @@
                 container.innerHTML = '<div class="col-span-full py-20 flex justify-center text-primary"><span class="material-symbols-rounded animate-spin text-5xl">sync</span></div>';
                 try {
                     const sortBy = sortSelect?.value || 'newest';
-                    let query = supabase.from('tracks').select('*, likes:likes(count)').eq('is_public', true);
+                    let query = supabase.from('tracks').select('*, likes:likes(count)');
 
                     if (sortBy === 'newest') query = query.order('created_at', { ascending: false });
                     else if (sortBy === 'plays') query = query.order('plays_count', { ascending: false });
