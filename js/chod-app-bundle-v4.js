@@ -2178,85 +2178,177 @@
             try { track = JSON.parse(trackStr); } catch (e) { return this.goTo('home'); }
 
             const el = (id) => document.getElementById(id);
-            if (el('cropper-title')) el('cropper-title').textContent = `${track.title} - ${track.artist}`;
-
             const container = el('cropper-waveform');
             if (!container) return;
-            container.innerHTML = '';
 
-            const ws = WaveSurfer.create({
-                container: container,
-                waveColor: '#B8D0E0',
-                progressColor: '#00609b',
-                cursorColor: 'transparent',
-                height: 128,
-            });
+            // Prepare container: ensure it's relative for the absolute loader
+            container.style.position = 'relative';
+            container.innerHTML = `
+                <style>
+                    #ws-inner-container::-webkit-scrollbar { height: 6px; }
+                    #ws-inner-container::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); border-radius: 10px; }
+                    #ws-inner-container::-webkit-scrollbar-thumb { background: #00609b; border-radius: 10px; }
+                    #ws-inner-container::-webkit-scrollbar-thumb:hover { background: #0077c2; }
+                </style>
+                <div id="cropper-loader" class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-slate-900/80 backdrop-blur-sm transition-opacity duration-500">
+                    <div class="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                    <p class="text-[10px] font-bold text-slate-300 uppercase tracking-[0.2em] animate-pulse">Initializing Studio</p>
+                </div>
+                <div id="ws-inner-container" class="w-full h-full overflow-x-auto overflow-y-hidden"></div>
+            `;
 
-            const wsRegions = ws.registerPlugin(WaveSurfer.Regions.create());
+            const loader = el('cropper-loader');
+            const wsContainer = el('ws-inner-container');
 
-            let currentRegion = null;
-            ws.on('decode', () => {
-                const dur = ws.getDuration();
-                currentRegion = wsRegions.addRegion({
-                    start: dur * 0.1,
-                    end: dur * 0.3,
-                    content: 'Drag to select',
-                    color: 'rgba(0, 96, 155, 0.3)',
-                    drag: true,
-                    resize: true,
-                });
-                updateTimeInfo();
-            });
-
-            wsRegions.on('region-updated', updateTimeInfo);
-
-            function updateTimeInfo() {
-                if (!currentRegion) return;
-                const fmt = window.app.player.fmt;
-                if (el('cropper-time-info')) {
-                    el('cropper-time-info').textContent = `${fmt(currentRegion.start)} - ${fmt(currentRegion.end)} (${fmt(currentRegion.end - currentRegion.start)})`;
+            setTimeout(() => {
+                if (typeof WaveSurfer === 'undefined') {
+                    if (loader) loader.innerHTML = '<p class="text-red-500 font-bold p-4 text-center text-xs">WaveSurfer library failed to load.</p>';
+                    return;
                 }
-            }
 
-            // --- ZOOM LOGIC ---
-            const zoomSlider = el('cropper-zoom-slider');
-            const zoomVal = el('zoom-value');
-            if (zoomSlider) {
-                zoomSlider.oninput = (e) => {
-                    const val = Number(e.target.value);
-                    ws.zoom(val);
-                    if (zoomVal) zoomVal.textContent = `${val}x`;
-                };
-            }
+                try {
+                    const ws = WaveSurfer.create({
+                        container: wsContainer,
+                        waveColor: '#475569',
+                        progressColor: '#00609b',
+                        cursorColor: '#00609b',
+                        height: 110, // Adjusted to leave room for the scrollbar
+                        barWidth: 2,
+                        barGap: 3,
+                        barRadius: 2,
+                        normalize: true,
+                        minPxPerSec: 1, // Base density that allows scrolling when zoomed
+                    });
 
-            ws.load(track.url);
+                    // Standard v7 Plugin Detection
+                    let wsRegions = null;
+                    const RegionsPlugin = window.WaveSurfer?.Regions || window.WaveSurferRegions;
+                    if (RegionsPlugin) {
+                        wsRegions = ws.registerPlugin(RegionsPlugin.create());
+                    }
+
+                    let currentRegion = null;
+
+                    ws.on('ready', () => {
+                        console.log("ChodSound: Waveform ready");
+                        // Fade out loader
+                        if (loader) {
+                            loader.style.opacity = '0';
+                            setTimeout(() => loader.remove(), 500);
+                        }
+                        
+                        if (el('cropper-title')) el('cropper-title').textContent = `${track.title} - ${track.artist}`;
+                        
+                        if (wsRegions) {
+                            const dur = ws.getDuration();
+                            currentRegion = wsRegions.addRegion({
+                                start: dur * 0.1,
+                                end: Math.min(dur * 0.4, dur),
+                                content: 'Selection',
+                                color: 'rgba(0, 96, 155, 0.25)',
+                                drag: true,
+                                resize: true,
+                            });
+                            updateTimeDisplay();
+                        }
+                    });
+
+                    ws.on('error', (err) => {
+                        console.error("ChodSound: WS Error", err);
+                        if (loader) loader.innerHTML = `<p class="text-red-400 text-xs font-bold px-4 text-center">Failed to load audio: ${err}</p>`;
+                    });
+
+                    if (wsRegions) {
+                        wsRegions.on('region-updated', (region) => {
+                            currentRegion = region;
+                            updateTimeDisplay();
+                        });
+                    }
+
+                    function updateTimeDisplay() {
+                        if (!currentRegion) return;
+                        const duration = (currentRegion.end - currentRegion.start).toFixed(1);
+                        
+                        const fmt = (s) => {
+                            const m = Math.floor(s / 60);
+                            const sc = (s % 60).toFixed(1);
+                            return `${m}:${sc < 10 ? '0' : ''}${sc}`;
+                        };
+                        
+                        // Update the info panel text
+                        const info = el('cropper-time-info');
+                        if (info) {
+                            info.textContent = `${fmt(currentRegion.start)} - ${fmt(currentRegion.end)} (${duration}s)`;
+                        }
+
+                        // Update the region label content for visual feedback
+                        currentRegion.setOptions({
+                            content: `Selection: ${duration}s`,
+                            color: 'rgba(0, 96, 155, 0.25)'
+                        });
+                    }
+
+                    // --- SMOOTH ZOOM LOGIC ---
+                    const zoomSlider = el('cropper-zoom-slider');
+                    const zoomVal = el('zoom-value');
+                    if (zoomSlider) {
+                        zoomSlider.oninput = (e) => {
+                            const val = Number(e.target.value);
+                            ws.zoom(val);
+                            if (zoomVal) zoomVal.textContent = `${val}x`;
+                        };
+                    }
+
+                    ws.load(track.url);
+                    window.cropperWS = ws;
+                    
+                } catch (ew) {
+                    console.error("ChodSound: Init Error", ew);
+                    if (loader) loader.innerHTML = `<p class="text-red-500 text-xs font-bold uppercase p-4 text-center">${ew.message}</p>`;
+                }
+            }, 300);
 
             const btnDownload = el('btn-download-crop');
             if (btnDownload) {
                 btnDownload.onclick = async () => {
-                    if (!currentRegion) return alert('Wait for track to load.');
-                    const start = currentRegion.start;
-                    const end = currentRegion.end;
+                    const ws = window.cropperWS;
+                    if (!ws || !ws.getDuration()) return alert('Please wait for audio to load.');
+                    
+                    let activeRegion = null;
+                    const plugins = ws.plugins || [];
+                    const regPlugin = plugins.find(p => typeof p.getRegions === 'function');
+                    if (regPlugin) {
+                        activeRegion = regPlugin.getRegions()[0];
+                    }
+
+                    if (!activeRegion) return alert('No selection found.');
+
+                    const start = activeRegion.start;
+                    const end = activeRegion.end;
                     const format = el('cropper-format')?.value || 'wav';
 
+                    const spinner = el('cropper-spinner');
+                    const btnText = el('cropper-btn-text');
+
                     btnDownload.disabled = true;
-                    if (el('cropper-spinner')) el('cropper-spinner').classList.remove('hidden');
-                    if (el('cropper-btn-text')) el('cropper-btn-text').textContent = "Processing...";
+                    if (spinner) spinner.classList.remove('hidden');
+                    if (btnText) btnText.textContent = "Processing...";
 
                     try {
                         const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                        const res = await fetch(track.url);
-                        const arrayBuffer = await res.arrayBuffer();
+                        const response = await fetch(track.url);
+                        const arrayBuffer = await response.arrayBuffer();
                         const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
 
-                        const frameStart = Math.floor(start * audioBuffer.sampleRate);
-                        const frameEnd = Math.floor(end * audioBuffer.sampleRate);
-                        const frameLen = frameEnd - frameStart;
+                        const sampleRate = audioBuffer.sampleRate;
+                        const frameStart = Math.floor(start * sampleRate);
+                        const frameEnd = Math.floor(end * sampleRate);
+                        const frameCount = frameEnd - frameStart;
 
                         const offlineCtx = new OfflineAudioContext(
                             audioBuffer.numberOfChannels,
-                            frameLen,
-                            audioBuffer.sampleRate
+                            frameCount,
+                            sampleRate
                         );
 
                         const source = offlineCtx.createBufferSource();
@@ -2265,33 +2357,32 @@
                         source.start(0, start, end - start);
 
                         const renderedBuffer = await offlineCtx.startRendering();
-                        let finalBlob;
+                        let blob;
 
                         if (format === 'wav') {
-                            finalBlob = audioBufferToWav(renderedBuffer);
+                            blob = audioBufferToWav(renderedBuffer);
                         } else if (format === 'mp3' && window.lamejs) {
-                            finalBlob = audioBufferToMp3(renderedBuffer);
+                            blob = audioBufferToMp3(renderedBuffer);
                         } else {
-                            throw new Error("Format not supported or missing encoder.");
+                            throw new Error("Missing encoder.");
                         }
 
-                        // Download
-                        const dlUrl = URL.createObjectURL(finalBlob);
+                        const url = URL.createObjectURL(blob);
                         const a = document.createElement('a');
-                        a.href = dlUrl;
-                        a.download = `${track.title.replace(/\\s+/g, '_')}_cropped.${format}`;
+                        a.href = url;
+                        a.download = `${track.title.replace(/\s+/g, '_')}_cut.${format}`;
                         document.body.appendChild(a);
                         a.click();
                         document.body.removeChild(a);
-                        URL.revokeObjectURL(dlUrl);
+                        URL.revokeObjectURL(url);
 
                     } catch (e) {
-                        console.error('Cropper Error:', e);
-                        alert("Cropping failed: " + e.message);
+                        console.error('Export Error:', e);
+                        alert("Export failed: " + e.message);
                     } finally {
                         btnDownload.disabled = false;
-                        if (el('cropper-spinner')) el('cropper-spinner').classList.add('hidden');
-                        if (el('cropper-btn-text')) el('cropper-btn-text').textContent = "Download Selection";
+                        if (spinner) spinner.classList.add('hidden');
+                        if (btnText) btnText.textContent = "Download Selection";
                     }
                 };
             }
